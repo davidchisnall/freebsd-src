@@ -90,7 +90,6 @@ SRCS+=	__getosreldate.c \
 	libc_dlopen.c \
 	lockf.c \
 	lrand48.c \
-	memalign.c \
 	mrand48.c \
 	nftw.c \
 	nice.c \
@@ -156,6 +155,12 @@ SRCS+=	__getosreldate.c \
 	waitpid.c \
 	waitid.c \
 	wordexp.c
+
+
+.if ${MK_SNMALLOC} == "no"
+SRCS+=	memalign.c
+.endif
+
 .if ${MK_SYMVER} == yes
 SRCS+=	devname-compat11.c \
 	fts-compat.c \
