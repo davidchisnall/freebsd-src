@@ -67,6 +67,8 @@
 #define	PROC_NO_NEW_PRIVS_STATUS 20	/* query suid/sgid disabled status */
 #define	PROC_WXMAP_CTL		21	/* control W^X */
 #define	PROC_WXMAP_STATUS	22	/* query W^X */
+#define	PROC_SIGCAP_CTL		23	/* signal on capability errors */
+#define	PROC_SIGCAP_STATUS	24	/* query signal on capability status */
 
 /* Operations for PROC_SPROTECT (passed in integer arg). */
 #define	PPROT_OP(x)	((x) & 0xf)
@@ -151,6 +153,9 @@ struct procctl_reaper_kill {
 #define	PROC_WX_MAPPINGS_PERMIT		0x0001
 #define	PROC_WX_MAPPINGS_DISALLOW_EXEC	0x0002
 #define	PROC_WXORX_ENFORCE		0x80000000
+
+#define	PROC_SIGCAP_CTL_ENABLE		PROC_TRAPCAP_CTL_ENABLE
+#define	PROC_SIGCAP_CTL_DISABLE		PROC_TRAPCAP_CTL_DISABLE
 
 #ifndef _KERNEL
 __BEGIN_DECLS

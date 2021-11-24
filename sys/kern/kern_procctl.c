@@ -400,8 +400,12 @@ trace_status(struct thread *td, struct proc *p, void *data)
 	return (0);
 }
 
+/*
+ * Helper for SIGCAP and TRAPCAP. Both of these set or clear a p_flag2 bit, the
+ * bit is idenfitied by the `flag` argument.
+ */
 static int
-trapcap_ctl(struct thread *td, struct proc *p, void *data)
+sigtrapcap_ctl(struct thread *td, struct proc *p, void *data, int flag)
 {
 	int state;
 
@@ -410,15 +414,29 @@ trapcap_ctl(struct thread *td, struct proc *p, void *data)
 
 	switch (state) {
 	case PROC_TRAPCAP_CTL_ENABLE:
-		p->p_flag2 |= P2_TRAPCAP;
+		p->p_flag2 |= flag;
 		break;
 	case PROC_TRAPCAP_CTL_DISABLE:
-		p->p_flag2 &= ~P2_TRAPCAP;
+		p->p_flag2 &= ~flag;
 		break;
 	default:
 		return (EINVAL);
 	}
 	return (0);
+}
+
+static int
+trapcap_ctl(struct thread *td, struct proc *p, void *data)
+{
+
+	return (sigtrapcap_ctl(td, p, data, P2_TRAPCAP));
+}
+
+static int
+sigcap_ctl(struct thread *td, struct proc *p, void *data)
+{
+
+	return (sigtrapcap_ctl(td, p, data, P2_SIGCAP));
 }
 
 static int
@@ -429,6 +447,17 @@ trapcap_status(struct thread *td, struct proc *p, void *data)
 	status = data;
 	*status = (p->p_flag2 & P2_TRAPCAP) != 0 ? PROC_TRAPCAP_CTL_ENABLE :
 	    PROC_TRAPCAP_CTL_DISABLE;
+	return (0);
+}
+
+static int
+sigcap_status(struct thread *td, struct proc *p, void *data)
+{
+	int *status;
+
+	status = data;
+	*status = (p->p_flag2 & P2_SIGCAP) != 0 ? PROC_SIGCAP_CTL_ENABLE :
+	    PROC_SIGCAP_CTL_DISABLE;
 	return (0);
 }
 
@@ -858,6 +887,18 @@ static const struct procctl_cmd_info procctl_cmds_info[] = {
 	      .need_candebug = false,
 	      .copyin_sz = 0, .copyout_sz = sizeof(int),
 	      .exec = wxmap_status, .copyout_on_error = false, },
+	[PROC_SIGCAP_CTL] =
+	    { .lock_tree = PCTL_SLOCKED, .one_proc = false,
+	      .esrch_is_einval = false, .no_nonnull_data = false,
+	      .need_candebug = true,
+	      .copyin_sz = sizeof(int), .copyout_sz = 0,
+	      .exec = sigcap_ctl, .copyout_on_error = false, },
+	[PROC_SIGCAP_STATUS] =
+	    { .lock_tree = PCTL_UNLOCKED, .one_proc = true,
+	      .esrch_is_einval = false, .no_nonnull_data = false,
+	      .need_candebug = false,
+	      .copyin_sz = 0, .copyout_sz = sizeof(int),
+	      .exec = sigcap_status, .copyout_on_error = false, },
 };
 
 int

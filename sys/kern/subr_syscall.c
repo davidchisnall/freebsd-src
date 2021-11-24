@@ -222,14 +222,24 @@ syscallret(struct thread *td)
 	sa = &td->td_sa;
 	if (__predict_false(td->td_errno == ENOTCAPABLE ||
 	    td->td_errno == ECAPMODE)) {
-		if ((trap_enotcap ||
-		    (p->p_flag2 & P2_TRAPCAP) != 0) && IN_CAPABILITY_MODE(td)) {
-			ksiginfo_init_trap(&ksi);
-			ksi.ksi_signo = SIGTRAP;
-			ksi.ksi_errno = td->td_errno;
-			ksi.ksi_code = TRAP_CAP;
-			ksi.ksi_info.si_syscall = sa->original_code;
-			trapsignal(td, &ksi);
+		if (IN_CAPABILITY_MODE(td)) {
+			if ((trap_enotcap ||
+			    (p->p_flag2 & P2_TRAPCAP) != 0)) {
+				ksiginfo_init_trap(&ksi);
+				ksi.ksi_signo = SIGTRAP;
+				ksi.ksi_errno = td->td_errno;
+				ksi.ksi_code = TRAP_CAP;
+				ksi.ksi_info.si_syscall = sa->original_code;
+				trapsignal(td, &ksi);
+			}
+			if ((p->p_flag2 & P2_SIGCAP) != 0) {
+				ksiginfo_init_trap(&ksi);
+				ksi.ksi_signo = SIGCAP;
+				ksi.ksi_errno = td->td_errno;
+				ksi.ksi_code = TRAP_CAP;
+				ksi.ksi_info.si_syscall = sa->original_code;
+				trapsignal(td, &ksi);
+			}
 		}
 	}
 
