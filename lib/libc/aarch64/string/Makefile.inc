@@ -6,7 +6,6 @@
 AARCH64_STRING_FUNCS= \
 	memchr \
 	memcmp \
-	memcpy \
 	memmove \
 	memrchr \
 	memset \
@@ -19,6 +18,12 @@ AARCH64_STRING_FUNCS= \
 	strncmp \
 	strnlen \
 	strrchr
+
+.if ${MK_SNMALLOC_MEMCPY} == "yes"
+CFLAGS.memmove.S+=	-DSNMALLOC_MEMCPY
+.else
+AARCH64_STRING_FUNCS+= memcpy
+.endif
 
 #
 # Add the above functions. Generate an asm file that includes the needed
