@@ -30,7 +30,7 @@ MISRCS+=bcmp.c bcopy.c bzero.c explicit_bzero.c \
 	wmemcmp.c \
 	wmemcpy.c wmemmove.c wmempcpy.c wmemset.c
 
-.if ${MK_SNMALLOC} == "no"
+.if ${MK_SNMALLOC_MEMCPY} == "no"
 MISRCS+= memcpy.c
 .endif
 

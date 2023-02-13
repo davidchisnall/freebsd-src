@@ -10,6 +10,6 @@ MDSRCS+= \
 	strlen.S \
 	stpcpy.S
 
-.if ${MK_SNMALLOC} == "no"
-SRCS+= memcpy.S
+.if ${MK_SNMALLOC_MEMCPY} == "no"
+MDSRCS+= memcpy.S
 .endif

@@ -1,6 +1,11 @@
 .PATH: ${LIBC_SRCTOP}/stdlib/snmalloc
 
-MISRCS+=	malloc.cc memcpy.cc
+MISRCS+=	malloc.cc
+
+# Build snmalloc's memcpy if it's enabled
+.if ${MK_SNMALLOC_MEMCPY} == "yes"
+MISRCS+=	memcpy.cc
+.endif
 
 SYM_MAPS+=	${LIBC_SRCTOP}/stdlib/snmalloc/Symbol.map
 
