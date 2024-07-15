@@ -331,6 +331,7 @@ SUBDIR=	\
 	${_qatfw} \
 	${_qat_c2xxx} \
 	${_qat_c2xxxfw} \
+	qemufwcfg \
 	${_qlxge} \
 	${_qlxgb} \
 	${_qlxgbe} \
